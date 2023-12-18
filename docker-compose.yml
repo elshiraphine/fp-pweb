@@ -1,0 +1,59 @@
+version: '3.7'
+
+services:
+  php-httpd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      pweb:
+        ipv4_address: 10.11.1.252
+
+  mysql:
+    image: mysql
+    container_name: db
+    volumes:
+      - vol-mysql:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: "secret"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "MEZhUBHEqfNp"
+      MYSQL_DATABASE: "manajemen_siswa"
+    tty: true
+    restart: always
+    command:
+      - "--log_bin_trust_function_creators=1"
+    networks:
+      pweb:
+        ipv4_address: 10.11.1.253
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    links:
+      - mysql:db
+    depends_on:
+      - mysql
+    ports:
+      - 8181:80
+    environment:
+      PMA_HOST: "mysql"
+    networks:
+      pweb:
+        ipv4_address: 10.11.1.254
+
+volumes:
+  vol-mysql:
+
+networks:
+  pweb:
+    ipam:
+      config:
+        - subnet: 10.11.1.0/24

@@ -1,0 +1,3 @@
+CREATE USER 'superking'@'%' IDENTIFIED BY 'MEZhUBHEqfMp';
+GRANT ALL PRIVILEGES ON manajemen_siswa.* TO 'superking';
+FLUSH PRIVILEGES;
